@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaLayerGroup, FaSortAmountUp, FaSortAmountDown } from 'react-icons/fa';
+import { FaLayerGroup, FaSortAmountUp, FaSortAmountDown, FaChevronDown, FaChevronRight, FaFilter } from 'react-icons/fa';
+
 
 const ShelterTable = () => {
   const [data, setData] = useState([]);
@@ -8,6 +9,7 @@ const ShelterTable = () => {
   const [groupBy, setGroupBy] = useState(null);
   const [sortedBy, setSortedBy] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
+  const [expandedGroups, setExpandedGroups] = useState({}); 
 
   useEffect(() => {
     fetch('/data.json')
@@ -62,11 +64,6 @@ const ShelterTable = () => {
         }
       }
     }
-
-    // if (typeof value === 'object' && !Array.isArray(value)) {
-    //   return { displayValue: Object.entries(value).map(([key, val]) => `${key}: ${val}`).join(', '), className: '' };
-    // }
-
     return { displayValue: value, className: '' };
   };
 
@@ -91,16 +88,30 @@ const ShelterTable = () => {
     setFilteredData(sortedData);
   };
 
+  const toggleGroup = (group) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [group]: !prev[group]
+    }));
+  };
+
+  const countGroupedItems = (group) => {
+    return groupedData[group].length;
+  };
+
   return (
     <div className="container mx-auto p-3">
       <div className="flex items-center mb-4">
-        <input
-          type="text"
-          placeholder="Filter by Crisis"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="p-2 border rounded mr-4"
-        />
+      <div className="relative">
+          <input
+            type="text"
+            placeholder="Filter by Crisis"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="pl-10 p-2 border caret-cyan-700 caret rounded"
+          />
+          <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        </div>
       </div>
 
       <table className="table-auto w-full border-collapse border border-gray-200">
@@ -108,9 +119,14 @@ const ShelterTable = () => {
           <tr>
             {headers.map((header, index) => (
               <th key={index} className={`border-2 p-2 whitespace-nowrap align-middle text-left`}>
-                <div className={`flex items-center flex-col md:flex-row  gap-5 justify-items-center`}>
+                <div className={`flex items-center flex-col md:flex-row gap-5 justify-items-center`}>
                   {header}
-                  <FaLayerGroup className={`text-lg cursor-pointer  ${index >= 5 ? 'hidden' : ''}`} onClick={() => (index < 5 ? setGroupBy(groupBy === header ? null : header) : null)} />
+                  {index < 5 && (
+                    <FaLayerGroup
+                      className={`text-lg  cursor-pointer`}
+                      onClick={() => setGroupBy(groupBy === header ? null : header)}
+                    />
+                  )}
                   <FaSortAmountUp
                     className={`text-lg cursor-pointer ${sortedBy === header && sortOrder === 'asc' ? 'text-blue-500' : ''}`}
                     onClick={() => handleSort(header, 'asc')}
@@ -129,9 +145,16 @@ const ShelterTable = () => {
             Object.keys(groupedData).map((group, index) => (
               <React.Fragment key={index}>
                 <tr className="odd:bg-gray-100 even:bg-gray-50">
-                  <td colSpan={headers.length} className="p-2 font-bold">{group}</td>
+                  <td
+                    colSpan={headers.length}
+                    className="p-2 font-bold flex items-center cursor-pointer"
+                    onClick={() => toggleGroup(group)}
+                  >
+                    {expandedGroups[group] ? <FaChevronDown className="mr-2" /> : <FaChevronRight className="mr-2" />}
+                    {group} ({countGroupedItems(group)})
+                  </td>
                 </tr>
-                {groupedData[group].map((item, subIndex) => (
+                {expandedGroups[group] && groupedData[group].map((item, subIndex) => (
                   <tr key={subIndex} className="hover:bg-gray-100">
                     {headers.map((header, idx) => {
                       const { displayValue, className } = BodyValue(item[header] || '', idx);
@@ -151,7 +174,7 @@ const ShelterTable = () => {
                 {headers.map((header, idx) => {
                   const { displayValue, className } = BodyValue(item[header] || '', idx);
                   return (
-                    <td key={idx} className={`border  p-2 ${className}`}>
+                    <td key={idx} className={`border text-left p-2 ${className}`}>
                       {displayValue}
                     </td>
                   );
