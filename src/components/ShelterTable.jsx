@@ -1,6 +1,272 @@
-import React, { useState, useEffect } from 'react';
-import { FaLayerGroup, FaSortAmountUp, FaSortAmountDown, FaChevronDown, FaChevronRight, FaFilter } from 'react-icons/fa';
+import React, { useState, useEffect, Fragment } from 'react';
+import { FaLayerGroup, FaSortAmountUp, FaSortAmountDown, FaFilter } from 'react-icons/fa';
 
+const columnSchema = [
+  {
+    Title: "CRISIS",
+    sorting: true,
+    grouping: true,
+    rotate: false,
+  },
+  {
+    Title: "EDITION",
+    sorting: true,
+    grouping: true,
+    rotate: false,
+  },
+  {
+    Title: "YEAR",
+    sorting: true,
+    grouping: true,
+    rotate: false,
+  },
+  {
+    Title: "COUNTRY",
+    sorting: true,
+    grouping: true,
+    rotate: false,
+  },
+  {
+    Title: "CASE STUDY",
+    sorting: true,
+    grouping: true,
+    rotate: false,
+  },
+  {
+    Title: "Accessibility / Disability Inclusion",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Adaptability (of shelter solutions)",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Advocacy",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Cash and Market-based approaches",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Community engagement",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Coordination and partnerships",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Cost effectiveness",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Coverage and scale",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Cultural appropriateness of shelter solutions",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Disaster Risk Reduction",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Durability of shelter solutions",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Environmental sustainability",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Flexibility of the organization / project",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "GBV risk mitigation",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Gender mainstreaming / Women’s empowerment",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Geographic Targeting (project locations)",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Habitability / Comfort",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Health",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Integrated programming / Multi-sectoral approaches",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Links with recovery / wider impacts / durable solutions",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Livelihoods / employment opportunities",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Local authority / Government engagement",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Local construction techniques / capacity / materials",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Local private sector engagement",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Location and settlement planning",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Market-based approaches",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Monitoring and Evaluation",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Occupants’ satisfaction",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Organizational capacity / Preparedness",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Procurement and logistics",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Project planning",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Protection mainstreaming / risk mitigation",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Security of Tenure / HLP",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Settlements approach",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Social Cohesion / Community stabilization / Resilience",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Socio-Technical Assistance quality",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Targeting of assistance (beneficiary selection)",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Team composition / Staffing",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+  {
+    Title: "Timeliness of the assistance",
+    sorting: false,
+    grouping: false,
+    rotate: true,
+  },
+]
 
 const ShelterTable = () => {
   const [data, setData] = useState([]);
@@ -9,12 +275,23 @@ const ShelterTable = () => {
   const [groupBy, setGroupBy] = useState(null);
   const [sortedBy, setSortedBy] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
-  const [expandedGroups, setExpandedGroups] = useState({}); 
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const [table, setTable] = useState({
+    columns: columnSchema,
+    data: [],
+  });
 
   useEffect(() => {
     fetch('/data.json')
       .then((response) => response.json())
-      .then((jsonData) => setData(jsonData))
+      .then((jsonData) => {
+        setData(jsonData);
+        setFilteredData(jsonData);
+        setTable((prevTable) => ({
+          ...prevTable,
+          data: jsonData,
+        }));
+      })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
@@ -22,15 +299,23 @@ const ShelterTable = () => {
     if (filter) {
       const filtered = data.filter((item) => item.CRISIS.includes(filter));
       setFilteredData(filtered);
+      setTable((prevTable) => ({
+        ...prevTable,
+        data: filtered,
+      }));
     } else {
       setFilteredData(data);
+      setTable((prevTable) => ({
+        ...prevTable,
+        data,
+      }));
     }
   }, [filter, data]);
 
   const groupByColumn = (items, column) => {
     const grouped = {};
     items.forEach((item) => {
-      const key = item[column];
+      const key = item[column] || 'Ungrouped';
       if (!grouped[key]) {
         grouped[key] = [];
       }
@@ -39,152 +324,161 @@ const ShelterTable = () => {
     return grouped;
   };
 
-  const groupedData = groupBy ? groupByColumn(filteredData, groupBy) : null;
-
-  const getHeaders = (data) => {
-    if (data.length > 0) {
-      const allKeys = Object.keys(data[0]);
-      const startFromCrisis = allKeys.slice(allKeys.indexOf('CRISIS')).filter(key => !['url', 'TITLE', 'IMAGE', 'KEYWORDS', 'DESCRIPTION', 'Column1'].includes(key));
-      return startFromCrisis;
+  const handleGroupBy = (header) => {
+    if (header.grouping) {
+      setGroupBy(groupBy === header.Title ? null : header.Title);
     }
-    return [];
   };
 
-  const headers = getHeaders(filteredData);
-
-  const BodyValue = (value, index) => {
-    if (index >= 5) {
-      if (typeof value === 'number') {
-        if (value < 0) {
-          return { displayValue: 'W', className: 'bg-red-500 font-medium' };
-        } else if (value >= 1 && value < 3) {
-          return { displayValue: 'SW', className: 'bg-orange-500 font-medium' };
-        } else if (value >= 3) {
-          return { displayValue: 'S', className: 'bg-green-500 font-medium' };
-        }
-      }
-    }
-    return { displayValue: value, className: '' };
-  };
+  const groupedData = groupBy ? groupByColumn(filteredData, groupBy) : { Ungrouped: filteredData };
 
   const handleSort = (header, order) => {
     setSortedBy(header);
     setSortOrder(order);
 
     const sortedData = [...filteredData].sort((a, b) => {
-      if (a[header] === 0 && b[header] !== 0) return 1;
-      if (a[header] !== 0 && b[header] === 0) return -1;
+      if (a[header] === null) return 1;
+      if (b[header] === null) return -1;
+      if (a[header] === b[header]) return 0;
+
       if (order === 'asc') {
-        if (a[header] < b[header]) return -1;
-        if (a[header] > b[header]) return 1;
-        return 0;
+        return a[header] > b[header] ? 1 : -1;
       } else {
-        if (a[header] > b[header]) return -1;
-        if (a[header] < b[header]) return 1;
-        return 0;
+        return a[header] < b[header] ? 1 : -1;
       }
     });
 
     setFilteredData(sortedData);
+    setTable((prevTable) => ({
+      ...prevTable,
+      data: sortedData,
+    }));
   };
 
   const toggleGroup = (group) => {
     setExpandedGroups((prev) => ({
       ...prev,
-      [group]: !prev[group]
+      [group]: !prev[group],
     }));
   };
 
-  const countGroupedItems = (group) => {
-    return groupedData[group].length;
+  const changeValue = (value) => {
+    let content = value;
+    let styleContent = '';
+
+    if (typeof value === 'number') {
+      if (value === -3) {
+        content = 'W';
+        styleContent = 'bg-red-500 font-medium';
+      } else if (value === 1) {
+        content = 'SW';
+        styleContent = 'bg-orange-500 font-medium';
+      } else if (value === 3) {
+        content = 'S';
+        styleContent = 'bg-green-500 font-medium';
+      }
+    }
+
+    return { content, styleContent };
   };
 
-  return (
-    <div className="container mx-auto p-3">
-      <div className="flex items-center mb-4">
-      <div className="relative">
-          <input
-            type="text"
-            placeholder="Filter by Crisis"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="pl-10 p-2 border caret-cyan-700 caret rounded"
-          />
-          <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
-      </div>
 
-      <table className="table-auto w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            {headers.map((header, index) => (
-              <th key={index} className={`border-2 p-2 whitespace-nowrap align-middle text-left`}>
-                <div className={`flex items-center flex-col md:flex-row gap-5 justify-items-center`}>
-                  {header}
-                  {index < 5 && (
-                    <FaLayerGroup
-                      className={`text-lg  cursor-pointer`}
-                      onClick={() => setGroupBy(groupBy === header ? null : header)}
-                    />
+  return (
+    <>
+      <div className="container mx-auto">
+        <div className="flex items-center mb-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Filter by Crisis"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="pl-10 p-2 border caret-cyan-700 caret rounded"
+            />
+            <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          </div>
+        </div>
+        <table className="table-auto w-full border-collapse">
+          <thead>
+            <tr>
+              {table.columns.map((header, index) => (
+                <th
+                  key={index}
+                  className={`text-left ${header.rotate ? 'rotate-header' : 'border-l border-l-[#9ca3af] bg-gray-200 '}`}
+                  style={{ height: '250px' }}
+                >
+                  <div className={`flex items-end whitespace-nowrap justify-between h-full ${header.rotate ? 'rotate-text font-normal text-xs' : ''}`}>
+                    {header.Title}
+                    <div className="flex items-end gap-2">
+                      {header.sorting && (
+                        <div className="flex flex-col">
+                          <FaSortAmountUp
+                            title="asc"
+                            className="ml-2 mb-2 cursor-pointer text-gray-400"
+                            onClick={() => handleSort(header.Title, 'asc')}
+                          />
+                          <FaSortAmountDown
+                            title="desc"
+                            className="ml-2 cursor-pointer text-gray-400"
+                            onClick={() => handleSort(header.Title, 'desc')}
+                          />
+                        </div>
+                      )}
+                      {header.grouping && (
+                        <FaLayerGroup
+                          className="mx-2 cursor-pointer text-gray-400"
+                          onClick={() => handleGroupBy(header)}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {header.rotate && (
+                    <>
+                      <span className="rotated-border"></span>
+                      <span className="rotated-background"></span>
+                    </>
                   )}
-                  <FaSortAmountUp
-                    className={`text-lg cursor-pointer ${sortedBy === header && sortOrder === 'asc' ? 'text-blue-500' : ''}`}
-                    onClick={() => handleSort(header, 'asc')}
-                  />
-                  <FaSortAmountDown
-                    className={`text-lg cursor-pointer ${sortedBy === header && sortOrder === 'desc' ? 'text-blue-500' : ''}`}
-                    onClick={() => handleSort(header, 'desc')}
-                  />
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {groupBy ? (
-            Object.keys(groupedData).map((group, index) => (
-              <React.Fragment key={index}>
-                <tr className="odd:bg-gray-100 even:bg-gray-50">
-                  <td
-                    colSpan={headers.length}
-                    className="p-2 font-bold flex items-center cursor-pointer"
-                    onClick={() => toggleGroup(group)}
-                  >
-                    {expandedGroups[group] ? <FaChevronDown className="mr-2" /> : <FaChevronRight className="mr-2" />}
-                    {group} ({countGroupedItems(group)})
-                  </td>
-                </tr>
-                {expandedGroups[group] && groupedData[group].map((item, subIndex) => (
-                  <tr key={subIndex} className="hover:bg-gray-100">
-                    {headers.map((header, idx) => {
-                      const { displayValue, className } = BodyValue(item[header] || '', idx);
-                      return (
-                        <td key={idx} className={`border p-2 ${className}`}>
-                          {groupBy === header ? '' : displayValue}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))
-          ) : (
-            filteredData.map((item, index) => (
-              <tr key={index} className="odd:bg-gray-200 even:bg-gray-100">
-                {headers.map((header, idx) => {
-                  const { displayValue, className } = BodyValue(item[header] || '', idx);
-                  return (
-                    <td key={idx} className={`border text-left p-2 ${className}`}>
-                      {displayValue}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {Object.keys(groupedData).map((group, groupIndex) => (
+              <Fragment key={groupIndex}>
+                {group !== 'Ungrouped' && (
+                  <tr className="bg-gray-300">
+                    <td
+                      colSpan={table.columns.length}
+                      className="p-2 cursor-pointer font-semibold"
+                      onClick={() => toggleGroup(group)}
+                    >
+                      {group} ({groupedData[group].length})
                     </td>
-                  );
-                })}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+                  </tr>
+                )}
+                {!expandedGroups[group] &&
+                  groupedData[group].map((item, rowIndex) => (
+                    <tr key={rowIndex} className="odd:bg-gray-100 even:bg-gray-50">
+                      {table.columns.map((header, colIndex) => {
+                        const { content, styleContent } = changeValue(item[header.Title]);
+                        return (
+                          <td key={colIndex} className={`border border-[#9ca3af] p-2 text-left ${styleContent}`}>
+                            {content || ''}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+
+
   );
 };
 
