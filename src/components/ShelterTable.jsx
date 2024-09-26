@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { FaLayerGroup, FaSortAmountUp, FaSortAmountDown, FaFilter } from 'react-icons/fa';
+import { FaLayerGroup, FaFilter, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const columnSchema = [
   {
@@ -7,268 +7,312 @@ const columnSchema = [
     sorting: true,
     grouping: true,
     rotate: false,
+    visibility: false,
   },
   {
     Title: "EDITION",
     sorting: true,
     grouping: true,
     rotate: false,
+    visibility: false,
   },
   {
     Title: "YEAR",
     sorting: true,
     grouping: true,
     rotate: false,
+    visibility: false,
   },
   {
     Title: "COUNTRY",
     sorting: true,
     grouping: true,
     rotate: false,
+    visibility: false,
   },
   {
     Title: "CASE STUDY",
     sorting: true,
     grouping: true,
     rotate: false,
+    visibility: false,
   },
   {
     Title: "Accessibility / Disability Inclusion",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Adaptability (of shelter solutions)",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Advocacy",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Cash and Market-based approaches",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Community engagement",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Coordination and partnerships",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Cost effectiveness",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Coverage and scale",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Cultural appropriateness of shelter solutions",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Disaster Risk Reduction",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Durability of shelter solutions",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Environmental sustainability",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Flexibility of the organization / project",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "GBV risk mitigation",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Gender mainstreaming / Women’s empowerment",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Geographic Targeting (project locations)",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Habitability / Comfort",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Health",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Integrated programming / Multi-sectoral approaches",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Links with recovery / wider impacts / durable solutions",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Livelihoods / employment opportunities",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Local authority / Government engagement",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Local construction techniques / capacity / materials",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Local private sector engagement",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Location and settlement planning",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Market-based approaches",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Monitoring and Evaluation",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Occupants’ satisfaction",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Organizational capacity / Preparedness",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Procurement and logistics",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Project planning",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Protection mainstreaming / risk mitigation",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Security of Tenure / HLP",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Settlements approach",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Social Cohesion / Community stabilization / Resilience",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Socio-Technical Assistance quality",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Targeting of assistance (beneficiary selection)",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Team composition / Staffing",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
   {
     Title: "Timeliness of the assistance",
-    sorting: false,
+    sorting: true,
     grouping: false,
     rotate: true,
+    visibility: true,
   },
 ]
 
-const ShelterTable = () => {
+export default function ShelterTable() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [filter, setFilter] = useState('');
@@ -333,18 +377,30 @@ const ShelterTable = () => {
   const groupedData = groupBy ? groupByColumn(filteredData, groupBy) : { Ungrouped: filteredData };
 
   const handleSort = (header, order) => {
-    setSortedBy(header);
+    setSortedBy(header.Title);
     setSortOrder(order);
 
     const sortedData = [...filteredData].sort((a, b) => {
-      if (a[header] === null) return 1;
-      if (b[header] === null) return -1;
-      if (a[header] === b[header]) return 0;
+      const aValue = a[header.Title];
+      const bValue = b[header.Title];
 
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      if (header.rotate && typeof aValue === 'number' && typeof bValue === 'number') {
+        if (order === 'asc') {
+          return aValue - bValue;
+        } else {
+          return bValue - aValue;
+        }
+      }
+
+
+      if (aValue === bValue) return 0;
       if (order === 'asc') {
-        return a[header] > b[header] ? 1 : -1;
+        return aValue > bValue ? 1 : -1;
       } else {
-        return a[header] < b[header] ? 1 : -1;
+        return aValue < bValue ? 1 : -1;
       }
     });
 
@@ -354,6 +410,7 @@ const ShelterTable = () => {
       data: sortedData,
     }));
   };
+
 
   const toggleGroup = (group) => {
     setExpandedGroups((prev) => ({
@@ -399,40 +456,39 @@ const ShelterTable = () => {
           </div>
         </div>
         <table className="table-auto mb-2 w-full border-collapse">
-          <thead className=' bg-gray-200'>
+          <thead className="bg-gray-200">
             <tr>
               {table.columns.map((header, index) => (
                 <th
                   key={index}
-                  className={`text-left  ${header.rotate ? 'rotate-header' : 'border-l border-[#9ca3af] '}`}
+                  className={`text-left ${header.rotate ? 'rotate-header' : 'border-l border-[#9ca3af]'}`}
                   style={{ height: '250px' }}
                 >
-                  <div className={`flex items-end whitespace-nowrap justify-between h-full ${header.rotate ? 'rotate-text font-normal text-xs' : ''}`}>
-                    {header.Title}
-                    <div className="flex items-end gap-2">
-                      {header.sorting && (
-                        <div className="flex flex-col">
-                          <FaSortAmountUp
+                  <div className={`flex items-end whitespace-nowrap justify-between h-full ${header.rotate ? 'rotate-text font-light text-xs' : ''}`}>
+                    <div className="flex">
+                      {header.sorting && (typeof filteredData[0]?.[header.Title] === 'number' || !header.rotate) && (
+                        <div className="flex items-center text-[13px] flex-col ">
+                          <FaSortUp
                             title="asc"
-                            className="ml-2 mb-2 cursor-pointer text-gray-400"
-                            onClick={() => handleSort(header.Title, 'asc')}
+                            className="cursor-pointer mb-[-3px] text-gray-400"
+                            onClick={() => handleSort(header, 'asc')}
                           />
-                          <FaSortAmountDown
+                          <FaSortDown
                             title="desc"
-                            className="ml-2 cursor-pointer text-gray-400"
-                            onClick={() => handleSort(header.Title, 'desc')}
+                            className="cursor-pointer mt-[-3px]  text-gray-400"
+                            onClick={() => handleSort(header, 'desc')}
                           />
                         </div>
                       )}
-                      {header.grouping && (
-                        <FaLayerGroup
-                          className="mx-2 cursor-pointer text-gray-400"
-                          onClick={() => handleGroupBy(header)}
-                        />
-                      )}
+                      {header.Title}
                     </div>
+                    {header.grouping && (
+                      <FaLayerGroup
+                        className="mx-2 cursor-pointer text-gray-400"
+                        onClick={() => handleGroupBy(header)}
+                      />
+                    )}
                   </div>
-
                   {header.rotate && (
                     <>
                       <span className="rotated-border"></span>
@@ -481,5 +537,3 @@ const ShelterTable = () => {
 
   );
 };
-
-export default ShelterTable;

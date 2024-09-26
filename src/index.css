@@ -13,7 +13,7 @@
   transform: rotate(355deg) skew(23deg);
   left: -20px;
   bottom: -24px;
-  width: 40px;
+  width: 50px;
   vertical-align: bottom;
 }
 
@@ -33,7 +33,7 @@
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 30px;
+  width: 36px;
   height: 367px;
   background-color: #e5e7eb;
   transform: skew(58deg) rotate(445deg);
