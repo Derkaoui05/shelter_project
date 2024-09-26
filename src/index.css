@@ -10,7 +10,7 @@
 
 .rotate-text {
   position: relative;
-  transform: rotate(356deg) skew(23deg);
+  transform: rotate(355deg) skew(23deg);
   left: -20px;
   bottom: -24px;
   width: 40px;
@@ -27,6 +27,16 @@
   border: 1px solid #9ca3af;
   transform: rotate(-5deg);
   transform-origin: left bottom;
-
 }
 
+.rotate-header .rotated-background {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 30px;
+  height: 367px;
+  background-color: #e5e7eb;
+  transform: skew(58deg) rotate(445deg);
+  transform-origin: left bottom;
+  z-index: -2;
+}

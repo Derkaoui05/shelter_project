@@ -386,7 +386,7 @@ const ShelterTable = () => {
   return (
     <>
       <div className="container mx-auto">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center my-4">
           <div className="relative">
             <input
               type="text"
@@ -398,13 +398,13 @@ const ShelterTable = () => {
             <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
         </div>
-        <table className="table-auto w-full border-collapse">
-          <thead>
+        <table className="table-auto mb-2 w-full border-collapse">
+          <thead className=' bg-gray-200'>
             <tr>
               {table.columns.map((header, index) => (
                 <th
                   key={index}
-                  className={`text-left ${header.rotate ? 'rotate-header' : 'border-l border-l-[#9ca3af] bg-gray-200 '}`}
+                  className={`text-left  ${header.rotate ? 'rotate-header' : 'border-l border-[#9ca3af] '}`}
                   style={{ height: '250px' }}
                 >
                   <div className={`flex items-end whitespace-nowrap justify-between h-full ${header.rotate ? 'rotate-text font-normal text-xs' : ''}`}>
