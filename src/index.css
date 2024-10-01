@@ -2,41 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-.rotate-header {
+.rotate {
   position: relative;
-  transform: rotate(317deg) skew(-31deg);
-  transform-origin: left bottom;
+  white-space: nowrap;
+  padding: 0 !important;
 }
 
-.rotate-text {
+.rotate .header-content {
   position: relative;
-  transform: rotate(355deg) skew(23deg);
-  left: -20px;
-  bottom: -24px;
-  width: 50px;
-  vertical-align: bottom;
+  top: 0;
+  left: 125px;
+  height: 100%;
+  transform: skew(-45deg);
+  overflow: hidden;
+  border-left: 1px solid #9ca3af;
+  padding-left: 6px;
 }
 
-.rotate-header .rotated-border::before {
-  content: "";
+.rotate .header-content > span {
+  transform: skew(45deg) rotate(315deg);
   position: absolute;
-  left: 0px;
-  bottom: -1px;
-  width: 320px;
-  height: 1px;
-  border: 1px solid #9ca3af;
-  transform: rotate(-5deg);
-  transform-origin: left bottom;
+  bottom: 30px;
+  left: -12px;
+  display: inline-block;
+  width: 85px;
+  text-align: left;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 0.6rem;
+  z-index: 1;
 }
 
-.rotate-header .rotated-background {
+.rotate .header-background {
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 36px;
+  width: 60px;
   height: 367px;
   background-color: #e5e7eb;
-  transform: skew(58deg) rotate(445deg);
+  transform: skew(-45deg);
   transform-origin: left bottom;
   z-index: -2;
 }
