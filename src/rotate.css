@@ -9,7 +9,7 @@
   transform: rotate(355deg) skew(23deg);
   left: -20px;
   bottom: -24px;
-  width: 50px;
+  width: 50px !important;
   vertical-align: bottom;
 }
 

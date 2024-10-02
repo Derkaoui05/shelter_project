@@ -11,7 +11,7 @@
 .rotate .header-content {
   position: relative;
   top: 0;
-  left: 125px;
+  left: 187.9px;
   height: 100%;
   transform: skew(-45deg);
   overflow: hidden;
@@ -37,8 +37,8 @@
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 60px;
-  height: 367px;
+  width: 68px;
+  height: 377px;
   background-color: #e5e7eb;
   transform: skew(-45deg);
   transform-origin: left bottom;
