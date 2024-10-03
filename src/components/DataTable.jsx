@@ -1,220 +1,214 @@
-import { SortAsc, SortDesc, Layers, ChevronDown, ChevronUp } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState, useEffect, Fragment } from 'react';
+import { useTable, useSortBy, useExpanded, useGroupBy, useGlobalFilter } from 'react-table';
+import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp } from 'lucide-react';
+import { Tooltip } from 'react-tooltip';
+import SearchInput from './SearchInput';
 import columnSchema from '../Schema';
+import tableData from '../../data.json';
+
+const generateHash = (str) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+};
 
 export default function DataTable() {
-  const [table, setTable] = useState({
-    columns: columnSchema,
-    data: [],
-  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const data = useMemo(() => tableData, []);
 
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: '' });
-  const [groupConfig, setGroupConfig] = useState(null);
-  const [expandedGroups, setExpandedGroups] = useState({});
+  const columns = useMemo(() => {
+    return columnSchema.map((col) => ({
+      Header: col.Title,
+      accessor: col.Title,
+      disableSortBy: !col.sorting,
+      rotate: col.rotate,
+      grouping: col.grouping,
+      tooltip: col.tooltip,
+      Cell: ({ value, row }) => {
+        let content = value;
+        let styleContent = '';
+        if (typeof value === 'number') {
+          if (value === -3) {
+            content = 'W';
+            styleContent = 'bg-red-500 font-medium';
+          } else if (value === 1) {
+            content = 'SW';
+            styleContent = 'bg-orange-500 font-medium';
+          } else if (value === 3) {
+            content = 'S';
+            styleContent = 'bg-green-500 font-medium';
+          }
+        }
 
-  useEffect(() => {
-    fetch("/data.json")
-      .then((res) => res.json())
-      .then((data) => setTable((prevState) => ({ ...prevState, data })))
-      .catch((error) => console.error("Error fetching data:", error));
+        const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
+        const tooltipContent = col.tooltip ? `
+         <div class="p-2">
+         <h1 class="mb-6 text-lg font-semibold"> ${row.values['COUNTRY'] || 'notFound'} ${row.values['YEAR'] || 'notFound'} - ${row.values['CRISIS'] || 'notFound'}</h1>
+            ${row.original.DESCRIPTION ? `<p class="mb-1 font-semibold whitespace-nowrap">Description: <span class="font-normal">${row.original.DESCRIPTION}</span></p>` : '<p>no descriprtion available</p>'}
+            ${row.original.KEYWORDS ? `
+              <p class="mb-1 font-semibold">Keywords: <span class='font-normal'>${row.original.KEYWORDS}</span></p>
+            ` : 'no keywords available'}
+          </div>
+        ` : '';
+
+        return (
+          <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
+            <span
+              data-tooltip-id={tooltipId}
+              data-tooltip-html={tooltipContent}
+            >
+              {content || ''}
+            </span>
+          </div>
+        );
+      },
+    }));
   }, []);
 
-  const handleSort = (column) => {
-    if (!column.sorting) return;
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    setGlobalFilter,
+    toggleGroupBy,
+    state: { groupBy },
+  } = useTable(
+    {
+      columns,
+      data,
+      autoResetGroupBy: false,
+    },
+    useGlobalFilter,
+    useGroupBy,
+    useSortBy,
+    useExpanded
+  );
 
-    const direction =
-      sortConfig.key === column.Title && sortConfig.direction === 'asc'
-        ? 'desc'
-        : 'asc';
-    setSortConfig({ key: column.Title, direction });
+  useEffect(() => {
+    setGlobalFilter(searchQuery || undefined);
+  }, [searchQuery, setGlobalFilter]);
+
+  const handleGroupBy = (columnId) => {
+    if (groupBy.length === 0) {
+      toggleGroupBy(columnId);
+    } else if (groupBy.length === 1 && groupBy[0] !== columnId) {
+      toggleGroupBy(columnId);
+      toggleGroupBy(groupBy[0]);
+    } else if (groupBy[0] === columnId) {
+      toggleGroupBy(columnId);
+    }
   };
 
-  const sortedData = [...table.data];
-  if (sortConfig.key) {
-    sortedData.sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
+  if (!data || data.length === 0) {
+    return <div className="text-center text-red-600 font-bold p-4">NO DATA AVAILABLE😑</div>;
   }
 
-
-  const handleGroup = (column) => {
-    if (!column.grouping) return;
-
-    console.log("Grouping by:", column.Title)
-
-    if (groupConfig === column.Title) {
-
-      setGroupConfig(null);
-      setExpandedGroups({});
-    } else {
-
-      setGroupConfig(column.Title);
-      setExpandedGroups({});
-    }
-  };
-
-  const toggleGroup = (groupKey) => {
-    setExpandedGroups((prevState) => ({
-      ...prevState,
-      [groupKey]: !prevState[groupKey],
-    }));
-  };
-
-  const groupedData = groupConfig
-    ? sortedData.reduce((groups, item) => {
-      const groupKey = item[groupConfig];
-      if (!groups[groupKey]) {
-        groups[groupKey] = [];
-      }
-      groups[groupKey].push(item);
-      return groups;
-    }, {})
-    : { all: sortedData };
-
-  const changeValue = (value) => {
-    let content = value;
-    let styleContent = '';
-
-    if (typeof value === 'number') {
-      if (value === -3) {
-        content = 'W';
-        styleContent = 'bg-red-500 font-medium';
-      } else if (value === 1) {
-        content = 'SW';
-        styleContent = 'bg-orange-500 font-medium';
-      } else if (value === 3) {
-        content = 'S';
-        styleContent = 'bg-green-500 font-medium';
-      }
-    }
-
-    return { content, styleContent };
-  };
-
   return (
-    <div className="relative overflow-x-auto shadow-xl shadow-slate-400 rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-200">
-          <tr>
-            {table.columns.map((column, colIndex) => (
-              <th
-                key={colIndex}
-                scope="col"
-                className={`px-6 py-3 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'border-l border-[#9ca3af]'}`}
-                style={{ height: '375px' }}  // Ensure this matches your CSS
-              >
-                {column.rotate && <div className="header-background" />}
-                <div className="header-content flex items-end">
-                  {column.rotate && (
-                    <>
-
-                      <div className="cursor-pointer mr-2" onClick={(e) => { e.stopPropagation(); handleSort(column); }}>
-                        {sortConfig.key === column.Title ? (
-                          sortConfig.direction === 'asc' ? (
-                            <SortAsc className="inline text-black" size={16} />
+    <div className="space-y-4">
+      <SearchInput
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search Here..."
+      />
+      <div className="relative mt-12 overflow-x-auto shadow-xl shadow-slate-400">
+        <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-200">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th
+                    {...column.getHeaderProps()}
+                    className={`px-6 py-2 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'}`}
+                    style={{ height: '375px' }}
+                  >
+                    {column.rotate && <div className='header-background'></div>}
+                    <div className="header-content flex items-end">
+                      <span>{column.render('Header')}</span>
+                      {column.canGroupBy && column.grouping && (
+                        <div
+                          onClick={() => handleGroupBy(column.id)}
+                          className="cursor-pointer ml-2"
+                        >
+                          {column.isGrouped ? (
+                            <Layers className="inline text-blue-600" size={16} />
                           ) : (
-                            <SortDesc className="inline text-black" size={16} />
-                          )
-                        ) : (
-                          <SortAsc className="inline text-black opacity-60" size={16} />
-                        )}
-                      </div>
-                      <span className="rotate">{column.Title}</span>
-                    </>
-                  )}
-                  {!column.rotate && (
-                    <>
-                      <span>{column.Title}</span>
-                      {column.grouping && (
-                        <div className="cursor-pointer ml-2" onClick={() => handleGroup(column)}>
-                          <Layers className="inline text-slate-500" size={16} />
-                        </div>
-                      )}
-                      {column.sorting && (
-                        <div className="cursor-pointer ml-2" onClick={(e) => {
-                          e.stopPropagation();
-                          handleSort(column);
-                        }}>
-                          {sortConfig.key === column.Title ? (
-                            sortConfig.direction === 'asc' ? (
-                              <SortAsc className="inline text-black" size={16} />
-                            ) : (
-                              <SortDesc className="inline text-black" size={16} />
-                            )
-                          ) : (
-                            <SortAsc className="inline text-black opacity-60" size={16} />
+                            <Layers className="inline text-black opacity-60" size={16} />
                           )}
                         </div>
                       )}
-                    </>
-                  )}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
 
-        <tbody className="bg-white">
-          {!groupConfig && sortedData.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-b border-gray-200 odd:bg-gray-200 even:bg-gray-100 transition-colors">
-              {table.columns.map((column, columnIndex) => {
-                const { content, styleContent } = changeValue(row[column.Title]);
-                return (
-                  <td
-                    key={columnIndex}
-                    className={`px-6 py-4 w-fit text-gray-900 ${styleContent}`}
-                  >
-                    {content || ''}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-
-          {groupConfig && Object.keys(groupedData).map((groupKey, index) => (
-            <React.Fragment key={index}>
-              <tr
-                className="bg-gray-100 cursor-pointer"
-                onClick={() => toggleGroup(groupKey)}
-              >
-                <td colSpan={table.columns.length} className="px-6 py-4 w-fit font-medium text-gray-900">
-                  <div className="flex justify-between">
-                    <span>{groupKey} (x{groupedData[groupKey].length})</span>
-                    {expandedGroups[groupKey] ? (
-                      <ChevronUp className="text-slate-500" size={16} />
-                    ) : (
-                      <ChevronDown className="text-slate-500" size={16} />
-                    )}
-                  </div>
-                </td>
-              </tr>
-
-              {expandedGroups[groupKey] &&
-                groupedData[groupKey].map((row, rowIndex) => (
-                  <tr key={rowIndex} className="border-b border-gray-200 odd:bg-gray-100 transition-colors">
-                    {table.columns.map((column, columnIndex) => {
-                      const { content, styleContent } = changeValue(row[column.Title]);
-                      return (
-                        <td
-                          key={columnIndex}
-                          className={`px-6 py-4 w-fit text-gray-900 ${styleContent}`}
-                        >
-                          {content || ''}
-                        </td>
-                      );
-                    })}
-                  </tr>
+                      {column.canSort && (
+                        <div className="cursor-pointer sort ml-2" {...column.getSortByToggleProps()}>
+                          {column.isSorted
+                            ? column.isSortedDesc
+                              ? <AArrowDown className="inline text-blue-600" size={17} />
+                              : <AArrowUp className="inline text-blue-600" size={17} />
+                            : <AArrowUp className="inline text-black opacity-60" size={16} />}
+                        </div>
+                      )}
+                    </div>
+                  </th>
                 ))}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()} className="bg-white">
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <Fragment key={row.id}>
+                  {row.isGrouped ? (
+                    <tr>
+                      <td colSpan={columns.length} className="p-2 cursor-pointer font-semibold">
+                        <span
+                          {...row.getToggleRowExpandedProps()}
+                          className="flex items-center"
+                        >
+                          {row.isExpanded ? (
+                            <ChevronUp className="mr-2" />
+                          ) : (
+                            <ChevronDown className="mr-2" />
+                          )}
+                          {row.groupByVal} (x{row.subRows.length})
+                        </span>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr {...row.getRowProps()} className="border-b border-gray-200 odd:bg-gray-100 even:bg-gray-50">
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()} className="text-left">
+                          {cell.render('Cell')}
+                        </td>
+                      ))}
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {columns.filter(col => col.tooltip).map(col => (
+        rows.map(row => {
+          const tooltipId = `tooltip-${generateHash(`${row.id}-${col.Header}`)}`;
+          return (
+            <Tooltip
+              key={tooltipId}
+              id={tooltipId}
+              place='top-end'
+              offset={5}
+              className="z-10 max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg"
+              classNameArrow="!border-t-gray-200"
+            />
+          );
+        })
+      ))}
     </div>
-
   );
 }

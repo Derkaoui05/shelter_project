@@ -1,15 +1,19 @@
+import { useEffect, useState } from "react"
 import DataTable from "./components/DataTable"
-import ShelterTable from "./components/ShelterTable"
-
-
 
 const App = () => {
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    fetch("/data.json")
+      .then((res) => res.json())
+      .then(setData)
+      .catch((error) => console.error("Error fetching data:", error))
+  }, [])
   return (
-    <div>
-      {/* <ShelterTable /> */}
-      
-      <DataTable />
-    </div>
+    <>
+      <DataTable data={data} />
+    </>
   )
 }
 

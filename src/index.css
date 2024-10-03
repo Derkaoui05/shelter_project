@@ -11,7 +11,8 @@
 .rotate .header-content {
   position: relative;
   top: 0;
-  left: 187.9px;
+  left: 187.9px; 
+  width: 70px;
   height: 100%;
   transform: skew(-45deg);
   overflow: hidden;
@@ -19,10 +20,22 @@
   padding-left: 6px;
 }
 
+.starter {
+  border-left: 1px solid #9ca3af;
+}
+
+.starter .header-content {
+  margin-bottom: -5px;
+  font-size: 18px;
+}
+.rotate .header-content > .sort{
+  margin-left: 17px;
+  transform: skew(45deg) rotate(314deg);
+}
 .rotate .header-content > span {
   transform: skew(45deg) rotate(315deg);
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   left: -12px;
   display: inline-block;
   width: 85px;
@@ -37,10 +50,11 @@
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 68px;
-  height: 377px;
+  width: 70px;
+  height: 388px; 
   background-color: #e5e7eb;
   transform: skew(-45deg);
   transform-origin: left bottom;
   z-index: -2;
 }
+
