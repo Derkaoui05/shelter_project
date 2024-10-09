@@ -47,7 +47,7 @@
   bottom: -1px;
   width: 70px;
   height: 378px; 
-  background-color: #e5e7eb;
+  /* background-color: #e5e7eb; */
   transform: skew(-45deg);
   transform-origin: left bottom;
   z-index: -2;

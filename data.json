@@ -1,7 +1,7 @@
 [
   {
     "SHELTER ASSISTANCE TYPES": {
-      "Emergency shelter": false,
+      "Emergency shelter": true,
       "Transitional/semi-permanent shelter": false,
       "Host family support": false,
       "Rental support": false,
@@ -18,11 +18,11 @@
       "Shelter materials (incl. kits)": false,
       "Tools/Fixings": false,
       "WASH items (& kits)": false,
-      "Advocacy / Legal assistance": false,
+      "Advocacy / Legal assistance": true,
       "Site / Settlement planning": false,
       "Infrastructure": false,
       "Training / Capacity Building": false,
-      "Tech. Assistance / Quality Assurance": false,
+      "Tech. Assistance / Quality Assurance": true,
       "Structural Assessment": false,
       "Guidelines / Mass communication": false,
       "Site Management": false,

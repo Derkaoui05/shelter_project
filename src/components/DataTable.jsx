@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useEffect, Fragment } from 'react';
 import { useTable, useSortBy, useExpanded, useGroupBy, useGlobalFilter } from 'react-table';
-import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp, DollarSign, Hammer } from 'lucide-react';
+import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
 import SearchInput from './SearchInput';
 import columnSchema from '../Schema';
 import tableData from '../../data.json';
-import { supportMethodIcons, shelterAssistanceIcons } from './Icons';
+import { shelterAssistanceIcons, supportMethodIcons } from './Icons';
 
 const generateHash = (str) => {
   let hash = 0;
@@ -33,59 +33,6 @@ const generateTooltipContent = (row) => {
   `;
 };
 
-const renderCellContent = (value, row, col) => {
-  if (col.Title === 'SUPPORT METHODS' && typeof value === 'object') {
-    return (
-      <div className="px-6 py-4 flex items-center text-gray-900">
-        {Object.keys(value).map((method, i) => (
-          <span key={i} className="flex items-center">
-            {supportMethodIcons[method] || <AArrowUp className="text-gray-500" size={16} />}
-          </span>
-        ))}
-      </div>
-    );
-  }
-  if (col.Title === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
-    return (
-      <div className="px-6 py-4 flex items-center text-gray-900">
-        {Object.keys(value).map((type, i) => (
-          <span key={i} className="flex items-center">
-            {shelterAssistanceIcons[type] || <AArrowUp className="text-gray-500" size={16} />}
-          </span>
-        ))}
-      </div>
-    );
-  }
-  let content = value;
-  let styleContent = '';
-
-  if (typeof value === 'number') {
-    if (value === -3) {
-      content = 'W';
-      styleContent = 'bg-[#d9d9d9] text-[#57595b] font-medium';
-    } else if (value === 1) {
-      content = 'SW';
-      styleContent = 'bg-[#acacac] text-[#57595b] font-medium';
-    } else if (value === 3) {
-      content = 'S';
-      styleContent = 'bg-[#57595b] text-white font-medium';
-    }
-  }
-
-  const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
-  const tooltipContent = col.tooltip ? generateTooltipContent(row) : '';
-
-  return (
-    <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
-      <span
-        data-tooltip-id={tooltipId}
-        data-tooltip-html={tooltipContent}
-      >
-        {content || ''}
-      </span>
-    </div>
-  );
-};
 
 export default function DataTable() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -103,6 +50,65 @@ export default function DataTable() {
       Cell: ({ value, row }) => renderCellContent(value, row, col),
     }));
   }, []);
+
+  const renderCellContent = (value, row, col) => {
+    if (col.Title === 'SUPPORT METHODS' && typeof value === 'object') {
+      return (
+        <div className="px-6 py-4 flex items-center text-gray-900">
+          {Object.entries(value).map(([method, isUsed]) =>
+            isUsed ? (
+              <span key={method} className="flex items-center mr-2" title={method}>
+                {supportMethodIcons[method] || method}
+              </span>
+            ) : null
+          )}
+        </div>
+      );
+    }
+    if (col.Title === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
+      return (
+        <div className="px-6 py-4 flex items-center text-gray-900">
+          {Object.entries(value).map(([type, isUsed]) =>
+            isUsed ? (
+              <span key={type} className="flex items-center mr-2" title={type}>
+                {shelterAssistanceIcons[type] || type}
+              </span>
+            ) : null
+          )}
+        </div>
+      );
+    }
+
+    let content = value;
+    let styleContent = '';
+
+    if (typeof value === 'number') {
+      if (value === -3) {
+        content = 'W';
+        styleContent = 'bg-[#d9d9d9] text-[#57595b] font-medium';
+      } else if (value === 1) {
+        content = 'SW';
+        styleContent = 'bg-[#acacac] text-[#57595b] font-medium';
+      } else if (value === 3) {
+        content = 'S';
+        styleContent = 'bg-[#57595b] text-white font-medium';
+      }
+    }
+
+    const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
+    const tooltipContent = col.tooltip ? generateTooltipContent(row) : '';
+
+    return (
+      <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
+        <span
+          data-tooltip-id={tooltipId}
+          data-tooltip-html={tooltipContent}
+        >
+          {content || ''}
+        </span>
+      </div>
+    );
+  };
 
   const {
     getTableProps,
@@ -152,14 +158,14 @@ export default function DataTable() {
         placeholder="Search Here..."
       />
       <div className="relative overflow-x-auto shadow-xl shadow-slate-400">
-        <div className=" absolute left-4 top-10 mb-4">
+        <div className="absolute left-4 top-10 mb-4">
           <h1 className='text-[#bdaa8d] text-3xl'>SHELTER PROJECTS</h1>
           <h1 className="text-7xl font-semibold text-start text-[#640811] capitalize leading-tight">
             Strength/Weakness Case <br /> Study Analysis Tool
           </h1>
         </div>
         <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-200">
+          <thead className="text-xs text-gray-700 uppercase">
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
@@ -177,9 +183,9 @@ export default function DataTable() {
                           className="cursor-pointer ml-2"
                         >
                           {column.isGrouped ? (
-                            <Layers className="inline text-blue-600" size={16} />
+                            <Layers className="inline text-black font-bold" size={18} />
                           ) : (
-                            <Layers className="inline text-black opacity-60" size={16} />
+                            <Layers className="inline text-black opacity-40" size={16} />
                           )}
                         </div>
                       )}
@@ -188,9 +194,9 @@ export default function DataTable() {
                         <div className="cursor-pointer sort ml-2" {...column.getSortByToggleProps()}>
                           {column.isSorted
                             ? column.isSortedDesc
-                              ? <AArrowDown className="inline text-blue-600" size={17} />
-                              : <AArrowUp className="inline text-blue-600" size={17} />
-                            : <AArrowUp className="inline text-black opacity-60" size={16} />}
+                              ? <AArrowDown className="inline text-black font-bold" size={17} />
+                              : <AArrowUp className="inline text-black font-bold" size={17} />
+                            : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
 
@@ -223,7 +229,7 @@ export default function DataTable() {
                       </td>
                     </tr>
                   ) : (
-                    <tr {...row.getRowProps()} className="border-b border-gray-200 odd:bg-gray-100 even:bg-gray-50">
+                    <tr {...row.getRowProps()} className="border-b border-gray-200 even:bg-gray-100">
                       {row.cells.map((cell) => (
                         <td {...cell.getCellProps()} className="text-left">
                           {cell.render('Cell')}
