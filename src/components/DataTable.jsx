@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect, Fragment } from 'react';
 import { useTable, useSortBy, useExpanded, useGroupBy, useGlobalFilter } from 'react-table';
-import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp, DollarSign, Hammer } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
 import SearchInput from './SearchInput';
 import columnSchema from '../Schema';
 import tableData from '../../data.json';
+import { supportMethodIcons, shelterAssistanceIcons } from './Icons';
 
 const generateHash = (str) => {
   let hash = 0;
@@ -14,6 +15,76 @@ const generateHash = (str) => {
     hash = hash & hash;
   }
   return Math.abs(hash).toString(36);
+};
+
+const generateTooltipContent = (row) => {
+  const country = row.values['COUNTRY'] || 'Not Found';
+  const year = row.values['YEAR'] || 'Not Found';
+  const crisis = row.values['CRISIS'] || 'Not Found';
+  const description = row.original.DESCRIPTION || 'No description available';
+  const keywords = row.original.KEYWORDS || 'No keywords available';
+
+  return `
+    <div class="p-2">
+      <h1 class="mb-6 text-lg font-semibold">${country} ${year} - ${crisis}</h1>
+      <p class="mb-1 font-semibold">Description: <span class="text-gray-300 font-normal">${description}</span></p>
+      <p class="mb-1 font-semibold">Keywords: <span class="font-normal text-gray-300">${keywords}</span></p>
+    </div>
+  `;
+};
+
+const renderCellContent = (value, row, col) => {
+  if (col.Title === 'SUPPORT METHODS' && typeof value === 'object') {
+    return (
+      <div className="px-6 py-4 flex items-center text-gray-900">
+        {Object.keys(value).map((method, i) => (
+          <span key={i} className="flex items-center">
+            {supportMethodIcons[method] || <AArrowUp className="text-gray-500" size={16} />}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  if (col.Title === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
+    return (
+      <div className="px-6 py-4 flex items-center text-gray-900">
+        {Object.keys(value).map((type, i) => (
+          <span key={i} className="flex items-center">
+            {shelterAssistanceIcons[type] || <AArrowUp className="text-gray-500" size={16} />}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  let content = value;
+  let styleContent = '';
+
+  if (typeof value === 'number') {
+    if (value === -3) {
+      content = 'W';
+      styleContent = 'bg-[#d9d9d9] text-[#57595b] font-medium';
+    } else if (value === 1) {
+      content = 'SW';
+      styleContent = 'bg-[#acacac] text-[#57595b] font-medium';
+    } else if (value === 3) {
+      content = 'S';
+      styleContent = 'bg-[#57595b] text-white font-medium';
+    }
+  }
+
+  const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
+  const tooltipContent = col.tooltip ? generateTooltipContent(row) : '';
+
+  return (
+    <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
+      <span
+        data-tooltip-id={tooltipId}
+        data-tooltip-html={tooltipContent}
+      >
+        {content || ''}
+      </span>
+    </div>
+  );
 };
 
 export default function DataTable() {
@@ -28,44 +99,8 @@ export default function DataTable() {
       rotate: col.rotate,
       grouping: col.grouping,
       tooltip: col.tooltip,
-      Cell: ({ value, row }) => {
-        let content = value;
-        let styleContent = '';
-        if (typeof value === 'number') {
-          if (value === -3) {
-            content = 'W';
-            styleContent = 'bg-red-500 font-medium';
-          } else if (value === 1) {
-            content = 'SW';
-            styleContent = 'bg-orange-500 font-medium';
-          } else if (value === 3) {
-            content = 'S';
-            styleContent = 'bg-green-500 font-medium';
-          }
-        }
-
-        const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
-        const tooltipContent = col.tooltip ? `
-         <div class="p-2">
-         <h1 class="mb-6 text-lg font-semibold"> ${row.values['COUNTRY'] || 'notFound'} ${row.values['YEAR'] || 'notFound'} - ${row.values['CRISIS'] || 'notFound'}</h1>
-            ${row.original.DESCRIPTION ? `<p class="mb-1 font-semibold whitespace-nowrap">Description: <span class="font-normal">${row.original.DESCRIPTION}</span></p>` : '<p>no descriprtion available</p>'}
-            ${row.original.KEYWORDS ? `
-              <p class="mb-1 font-semibold">Keywords: <span class='font-normal'>${row.original.KEYWORDS}</span></p>
-            ` : 'no keywords available'}
-          </div>
-        ` : '';
-
-        return (
-          <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
-            <span
-              data-tooltip-id={tooltipId}
-              data-tooltip-html={tooltipContent}
-            >
-              {content || ''}
-            </span>
-          </div>
-        );
-      },
+      visibility: col.visibility,
+      Cell: ({ value, row }) => renderCellContent(value, row, col),
     }));
   }, []);
 
@@ -116,14 +151,20 @@ export default function DataTable() {
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search Here..."
       />
-      <div className="relative mt-12 overflow-x-auto shadow-xl shadow-slate-400">
+      <div className="relative overflow-x-auto shadow-xl shadow-slate-400">
+        <div className=" absolute left-4 top-10 mb-4">
+          <h1 className='text-[#bdaa8d] text-3xl'>SHELTER PROJECTS</h1>
+          <h1 className="text-7xl font-semibold text-start text-[#640811] capitalize leading-tight">
+            Strength/Weakness Case <br /> Study Analysis Tool
+          </h1>
+        </div>
         <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-200">
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th
-                    {...column.getHeaderProps()}
+                    {...column.getHeaderProps()} colSpan={1}
                     className={`px-6 py-2 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'}`}
                     style={{ height: '375px' }}
                   >
@@ -152,12 +193,14 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-60" size={16} />}
                         </div>
                       )}
+
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
+
           <tbody {...getTableBodyProps()} className="bg-white">
             {rows.map((row) => {
               prepareRow(row);
@@ -194,6 +237,7 @@ export default function DataTable() {
           </tbody>
         </table>
       </div>
+
       {columns.filter(col => col.tooltip).map(col => (
         rows.map(row => {
           const tooltipId = `tooltip-${generateHash(`${row.id}-${col.Header}`)}`;
