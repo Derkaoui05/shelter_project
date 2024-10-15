@@ -1,7 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+html,
+body {
+  transition: transform 0.1s ease !important;
+}
+.starter .header-content {
+  margin-bottom: -5px;
+  font-size: 18px;
+}
 .rotate {
   position: relative;
   white-space: nowrap;
@@ -11,19 +18,15 @@
 .rotate .header-content {
   position: relative;
   top: 0;
-  left: 187.9px; 
+  left: 189px;
   width: 70px;
   height: 100%;
   transform: skew(-45deg);
   overflow: hidden;
-  border-left: 1px solid #9ca3af;
+  border-left: 1px solid #d8d9db;
   padding-left: 6px;
 }
-.starter .header-content {
-  margin-bottom: -5px;
-  font-size: 18px;
-}
-.rotate .header-content > .sort{
+.rotate .header-content > .sort {
   margin-left: 17px;
   transform: skew(45deg) rotate(314deg);
 }
@@ -46,10 +49,9 @@
   left: 0;
   bottom: -1px;
   width: 70px;
-  height: 378px; 
+  height: 378px;
   /* background-color: #e5e7eb; */
   transform: skew(-45deg);
   transform-origin: left bottom;
   z-index: -2;
 }
-

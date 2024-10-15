@@ -1,41 +1,15 @@
-import React, { useMemo, useState, useEffect, Fragment } from 'react';
-import { useTable, useSortBy, useExpanded, useGroupBy, useGlobalFilter } from 'react-table';
-import { ChevronDown, ChevronUp, Layers, AArrowDown, AArrowUp } from 'lucide-react';
+import { AArrowDown, AArrowUp, ChevronDown, ChevronUp, Layers, Eye, EyeOff } from 'lucide-react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { useExpanded, useGlobalFilter, useGroupBy, useSortBy, useTable } from 'react-table';
 import { Tooltip } from 'react-tooltip';
-import SearchInput from './SearchInput';
-import columnSchema from '../Schema';
 import tableData from '../../data.json';
-import { shelterAssistanceIcons, supportMethodIcons } from './Icons';
-
-const generateHash = (str) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
-};
-
-const generateTooltipContent = (row) => {
-  const country = row.values['COUNTRY'] || 'Not Found';
-  const year = row.values['YEAR'] || 'Not Found';
-  const crisis = row.values['CRISIS'] || 'Not Found';
-  const description = row.original.DESCRIPTION || 'No description available';
-  const keywords = row.original.KEYWORDS || 'No keywords available';
-
-  return `
-    <div class="p-2">
-      <h1 class="mb-6 text-lg font-semibold">${country} ${year} - ${crisis}</h1>
-      <p class="mb-1 font-semibold">Description: <span class="text-gray-300 font-normal">${description}</span></p>
-      <p class="mb-1 font-semibold">Keywords: <span class="font-normal text-gray-300">${keywords}</span></p>
-    </div>
-  `;
-};
-
+import columnSchema from '../Schema';
+import { generateHash, generateTooltipContent, shelterAssistanceIcons, supportMethodIcons } from '../utils/data';
+import SearchInput from './SearchInput';
 
 export default function DataTable() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [hiddenColumns, setHiddenColumns] = useState({});
   const data = useMemo(() => tableData, []);
 
   const columns = useMemo(() => {
@@ -47,31 +21,35 @@ export default function DataTable() {
       grouping: col.grouping,
       tooltip: col.tooltip,
       visibility: col.visibility,
-      Cell: ({ value, row }) => renderCellContent(value, row, col),
+      Cell: ({ value, row, column }) => renderCellContent(value, row, column),
     }));
   }, []);
 
-  const renderCellContent = (value, row, col) => {
-    if (col.Title === 'SUPPORT METHODS' && typeof value === 'object') {
+  const renderCellContent = (value, row, column) => {
+    if (hiddenColumns[column.id]) {
+      return null;
+    }
+
+    if (column.Header === 'SUPPORT METHODS' && typeof value === 'object') {
       return (
         <div className="px-6 py-4 flex items-center text-gray-900">
           {Object.entries(value).map(([method, isUsed]) =>
             isUsed ? (
-              <span key={method} className="flex items-center mr-2" title={method}>
-                {supportMethodIcons[method] || method}
+              <span key={method} className="flex items-center mr-2">
+                {supportMethodIcons[method]}
               </span>
             ) : null
           )}
         </div>
       );
     }
-    if (col.Title === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
+    if (column.Header === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
       return (
         <div className="px-6 py-4 flex items-center text-gray-900">
           {Object.entries(value).map(([type, isUsed]) =>
             isUsed ? (
-              <span key={type} className="flex items-center mr-2" title={type}>
-                {shelterAssistanceIcons[type] || type}
+              <span key={type} className="flex items-center mr-2">
+                {shelterAssistanceIcons[type]}
               </span>
             ) : null
           )}
@@ -95,8 +73,8 @@ export default function DataTable() {
       }
     }
 
-    const tooltipId = col.tooltip ? `tooltip-${generateHash(`${row.id}-${col.Title}`)}` : '';
-    const tooltipContent = col.tooltip ? generateTooltipContent(row) : '';
+    const tooltipId = column.tooltip ? `tooltip-${generateHash(`${row.id}-${column.Header}`)}` : '';
+    const tooltipContent = column.tooltip ? generateTooltipContent(row) : '';
 
     return (
       <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
@@ -118,6 +96,7 @@ export default function DataTable() {
     prepareRow,
     setGlobalFilter,
     toggleGroupBy,
+    allColumns,
     state: { groupBy },
   } = useTable(
     {
@@ -146,12 +125,19 @@ export default function DataTable() {
     }
   };
 
+  const toggleColumnVisibility = (columnId) => {
+    setHiddenColumns(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId]
+    }));
+  };
+
   if (!data || data.length === 0) {
     return <div className="text-center text-red-600 font-bold p-4">NO DATA AVAILABLE😑</div>;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 w-full overflow-x-visible">
       <SearchInput
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,7 +146,7 @@ export default function DataTable() {
       <div className="relative overflow-x-auto shadow-xl shadow-slate-400">
         <div className="absolute left-4 top-10 mb-4">
           <h1 className='text-[#bdaa8d] text-3xl'>SHELTER PROJECTS</h1>
-          <h1 className="text-7xl font-semibold text-start text-[#640811] capitalize leading-tight">
+          <h1 className="text-7xl font-medium text-start text-[#640811] capitalize leading-[95px]">
             Strength/Weakness Case <br /> Study Analysis Tool
           </h1>
         </div>
@@ -170,14 +156,17 @@ export default function DataTable() {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th
-                    {...column.getHeaderProps()} colSpan={1}
-                    className={`px-6 py-2 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'}`}
+                    {...column.getHeaderProps()}
+                    colSpan={1}
+                    className={`px-6 py-2 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${
+                      hiddenColumns[column.id] ? ' w-12 bg-gray-200' : ''
+                    }`}
                     style={{ height: '375px' }}
                   >
                     {column.rotate && <div className='header-background'></div>}
                     <div className="header-content flex items-end">
-                      <span>{column.render('Header')}</span>
-                      {column.canGroupBy && column.grouping && (
+                      {!hiddenColumns[column.id] && <span>{column.render('Header')}</span>}
+                      {column.canGroupBy && column.grouping && !hiddenColumns[column.id] && (
                         <div
                           onClick={() => handleGroupBy(column.id)}
                           className="cursor-pointer ml-2"
@@ -189,8 +178,7 @@ export default function DataTable() {
                           )}
                         </div>
                       )}
-
-                      {column.canSort && (
+                      {column.canSort && !hiddenColumns[column.id] && (
                         <div className="cursor-pointer sort ml-2" {...column.getSortByToggleProps()}>
                           {column.isSorted
                             ? column.isSortedDesc
@@ -199,14 +187,25 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
-
+                      {column.visibility && (
+                        <div
+                          onClick={() => toggleColumnVisibility(column.id)}
+                          className="cursor-pointer ml-2"
+                        >
+                          {hiddenColumns[column.id] ? (
+                            <EyeOff className="inline text-black font-bold" size={18} />
+                          ) : (
+                            <Eye className="inline text-black opacity-40" size={16} />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-
+          
           <tbody {...getTableBodyProps()} className="bg-white">
             {rows.map((row) => {
               prepareRow(row);
@@ -231,8 +230,11 @@ export default function DataTable() {
                   ) : (
                     <tr {...row.getRowProps()} className="border-b border-gray-200 even:bg-gray-100">
                       {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()} className="text-left">
-                          {cell.render('Cell')}
+                        <td 
+                          {...cell.getCellProps()} 
+                          className={`text-left ${hiddenColumns[cell.column.id] ? 'bg-gray-200 w-12' : ''}`}
+                        >
+                          {!hiddenColumns[cell.column.id] && cell.render('Cell')}
                         </td>
                       ))}
                     </tr>
@@ -252,7 +254,7 @@ export default function DataTable() {
               key={tooltipId}
               id={tooltipId}
               place='top-end'
-              offset={5}
+              offset={20}
               className="z-10 max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg"
               classNameArrow="!border-t-gray-200"
             />

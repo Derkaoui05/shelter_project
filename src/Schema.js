@@ -6,7 +6,6 @@ const columnSchema = [
     rotate: false,
     visibility: true,
     tooltip: true,
-    icons:false,
   },
   {
     Title: "COUNTRY",
@@ -15,7 +14,6 @@ const columnSchema = [
     rotate: false,
     visibility: true,
     tooltip: true,
-    icons:false,
   },
   {
     Title: "CRISIS",
@@ -24,7 +22,6 @@ const columnSchema = [
     rotate: false,
     visibility: true,
     tooltip: true,
-    icons:false,
   },
   {
     Title: "YEAR",
@@ -33,7 +30,6 @@ const columnSchema = [
     rotate: false,
     visibility: true,
     tooltip: true,
-    icons:false,
   },
   {
     Title: "EDITION",
@@ -42,25 +38,22 @@ const columnSchema = [
     rotate: false,
     visibility: true,
     tooltip: true,
-    icons:false,
   },
   {
     Title: "SHELTER ASSISTANCE TYPES",
     sorting: false,
     grouping: false,
     rotate: false,
-    visibility: true,
+    visibility: false,
     tooltip: false,
-    icons:true,
   },
   {
     Title: "SUPPORT METHODS",
     sorting: false,
     grouping: false,
     rotate: false,
-    visibility: true,
+    visibility: false,
     tooltip: false,
-    icons:true,
   },
   {
     Title: "Accessibility / Disability Inclusion",
@@ -69,7 +62,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Adaptability (of shelter solutions)",
@@ -78,7 +70,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Advocacy",
@@ -87,7 +78,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Cash and Market-based approaches",
@@ -96,7 +86,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Community engagement",
@@ -105,7 +94,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Coordination and partnerships",
@@ -114,7 +102,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Cost effectiveness",
@@ -123,7 +110,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Coverage and scale",
@@ -132,7 +118,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Cultural appropriateness of shelter solutions",
@@ -141,7 +126,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Disaster Risk Reduction",
@@ -150,7 +134,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Durability of shelter solutions",
@@ -159,7 +142,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Environmental sustainability",
@@ -168,7 +150,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Flexibility of the organization / project",
@@ -177,7 +158,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "GBV risk mitigation",
@@ -186,7 +166,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Gender mainstreaming / Women’s empowerment",
@@ -195,7 +174,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Geographic Targeting (project locations)",
@@ -204,7 +182,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Habitability / Comfort",
@@ -213,7 +190,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Health",
@@ -222,7 +198,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Integrated programming / Multi-sectoral approaches",
@@ -231,7 +206,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Links with recovery / wider impacts / durable solutions",
@@ -240,7 +214,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Livelihoods / employment opportunities",
@@ -249,7 +222,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Local authority / Government engagement",
@@ -258,7 +230,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Local construction techniques / capacity / materials",
@@ -267,7 +238,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Local private sector engagement",
@@ -276,7 +246,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Location and settlement planning",
@@ -285,7 +254,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Market-based approaches",
@@ -294,7 +262,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Monitoring and Evaluation",
@@ -303,7 +270,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Occupants’ satisfaction",
@@ -312,7 +278,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Organizational capacity / Preparedness",
@@ -321,7 +286,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Procurement and logistics",
@@ -330,7 +294,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Project planning",
@@ -339,7 +302,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Protection mainstreaming / risk mitigation",
@@ -348,7 +310,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Security of Tenure / HLP",
@@ -357,7 +318,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Settlements approach",
@@ -366,7 +326,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Social Cohesion / Community stabilization / Resilience",
@@ -375,7 +334,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Socio-Technical Assistance quality",
@@ -384,7 +342,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Targeting of assistance (beneficiary selection)",
@@ -393,7 +350,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Team composition / Staffing",
@@ -402,7 +358,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
   {
     Title: "Timeliness of the assistance",
@@ -411,7 +366,6 @@ const columnSchema = [
     rotate: true,
     visibility: false,
     tooltip: false,
-    icons:false,
   },
 ];
 export default columnSchema;
