@@ -1,4 +1,4 @@
-import { AArrowDown, AArrowUp, ChevronDown, ChevronUp, Layers, Eye, EyeOff } from 'lucide-react';
+import { AArrowDown, AArrowUp, ChevronDown, ChevronUp, Layers, Eye, EyeOff, Filter } from 'lucide-react';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useExpanded, useGlobalFilter, useGroupBy, useSortBy, useTable } from 'react-table';
 import { Tooltip } from 'react-tooltip';
@@ -11,6 +11,7 @@ export default function DataTable() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hiddenColumns, setHiddenColumns] = useState({});
   const data = useMemo(() => tableData, []);
+
 
   const columns = useMemo(() => {
     return columnSchema.map((col) => ({
@@ -33,8 +34,8 @@ export default function DataTable() {
     if (column.Header === 'SUPPORT METHODS' && typeof value === 'object') {
       return (
         <div className="px-6 py-4 flex items-center text-gray-900">
-          {Object.entries(value).map(([method, isUsed]) =>
-            isUsed ? (
+          {Object.entries(value).map(([method, used]) =>
+            used ? (
               <span key={method} className="flex items-center mr-2">
                 {supportMethodIcons[method]}
               </span>
@@ -46,8 +47,8 @@ export default function DataTable() {
     if (column.Header === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
       return (
         <div className="px-6 py-4 flex items-center text-gray-900">
-          {Object.entries(value).map(([type, isUsed]) =>
-            isUsed ? (
+          {Object.entries(value).map(([type, used]) =>
+            used ? (
               <span key={type} className="flex items-center mr-2">
                 {shelterAssistanceIcons[type]}
               </span>
@@ -150,6 +151,7 @@ export default function DataTable() {
             Strength/Weakness Case <br /> Study Analysis Tool
           </h1>
         </div>
+        
         <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase">
             {headerGroups.map((headerGroup) => (
@@ -158,12 +160,10 @@ export default function DataTable() {
                   <th
                     {...column.getHeaderProps()}
                     colSpan={1}
-                    className={`px-6 py-2 text-gray-800 align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${
-                      hiddenColumns[column.id] ? ' w-12 bg-gray-200' : ''
-                    }`}
+                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? ' w-12' : ''
+                      }`}
                     style={{ height: '375px' }}
                   >
-                    {column.rotate && <div className='header-background'></div>}
                     <div className="header-content flex items-end">
                       {!hiddenColumns[column.id] && <span>{column.render('Header')}</span>}
                       {column.canGroupBy && column.grouping && !hiddenColumns[column.id] && (
@@ -187,33 +187,35 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
+
                       {column.visibility && (
                         <div
                           onClick={() => toggleColumnVisibility(column.id)}
-                          className="cursor-pointer ml-2"
+                          className="cursor-pointer visible ml-2"
                         >
                           {hiddenColumns[column.id] ? (
-                            <EyeOff className="inline text-black font-bold" size={18} />
+                            <EyeOff className="inline text-black opacity-40" size={17} />
                           ) : (
                             <Eye className="inline text-black opacity-40" size={16} />
                           )}
                         </div>
                       )}
+                      {column.rotate && <div className='header-background'></div>}
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          
-          <tbody {...getTableBodyProps()} className="bg-white">
+
+          <tbody {...getTableBodyProps()} className="bg-white cursor-pointer">
             {rows.map((row) => {
               prepareRow(row);
               return (
                 <Fragment key={row.id}>
                   {row.isGrouped ? (
                     <tr>
-                      <td colSpan={columns.length} className="p-2 cursor-pointer font-semibold">
+                      <td colSpan={columns.length} className="p-2 font-semibold">
                         <span
                           {...row.getToggleRowExpandedProps()}
                           className="flex items-center"
@@ -223,15 +225,15 @@ export default function DataTable() {
                           ) : (
                             <ChevronDown className="mr-2" />
                           )}
-                          {row.groupByVal} (x{row.subRows.length})
+                          {row.groupByVal} x{row.subRows.length}
                         </span>
                       </td>
                     </tr>
                   ) : (
                     <tr {...row.getRowProps()} className="border-b border-gray-200 even:bg-gray-100">
                       {row.cells.map((cell) => (
-                        <td 
-                          {...cell.getCellProps()} 
+                        <td
+                          {...cell.getCellProps()}
                           className={`text-left ${hiddenColumns[cell.column.id] ? 'bg-gray-200 w-12' : ''}`}
                         >
                           {!hiddenColumns[cell.column.id] && cell.render('Cell')}
@@ -255,8 +257,9 @@ export default function DataTable() {
               id={tooltipId}
               place='top-end'
               offset={20}
-              className="z-10 max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg"
-              classNameArrow="!border-t-gray-200"
+              clickable={true}
+              effect="solid"
+              className="z-10 max-w-sm cursor-pointer bg-white border border-gray-200 rounded-lg shadow-lg"
             />
           );
         })

@@ -37,7 +37,7 @@ export const generateTooltipContent = (row) => {
         </div>
         <p class="mb-1 font-semibold">Description:<br /> <span class="text-gray-300 font-normal">${description}</span></p>
         <p class="mb-1 font-semibold">Keywords:<br/> <span class="font-normal text-gray-300">${keywords}</span></p>
-        <p class="mb-1 font-semibold">Link:<br/> <span class="font-normal text-gray-300">${link}</span></p>
+        <p class="mb-1 font-semibold">Link:<br/> <a href={${link}} class="font-normal text-blue-300">${link}</a></p>
       </div>
     `;
 };

@@ -30,6 +30,11 @@ body {
   margin-left: 17px;
   transform: skew(45deg) rotate(314deg);
 }
+.rotate .header-content > .visible {
+  margin-left: 2px;
+  margin-bottom: -1px;
+  transform: skew(45deg) rotate(314deg);
+}
 .rotate .header-content > span {
   transform: skew(45deg) rotate(315deg);
   position: absolute;
@@ -54,4 +59,12 @@ body {
   transform: skew(-45deg);
   transform-origin: left bottom;
   z-index: -2;
+}
+
+
+.filter-dropdown select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
 }
