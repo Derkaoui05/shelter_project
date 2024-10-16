@@ -3,7 +3,7 @@ import { Search } from 'lucide-react'
 
 const SearchInput = ({ value, onChange, placeholder = "Search..." }) => {
   return (
-    <div className="sticky z-50 top-0">
+    <>
 
     <div className="relative my-4 w-full max-w-md">
       <input
@@ -17,7 +17,7 @@ const SearchInput = ({ value, onChange, placeholder = "Search..." }) => {
         <Search className="h-5 w-5 text-gray-400" />
       </div>
     </div>
-    </div>
+    </>
 
   )
 }

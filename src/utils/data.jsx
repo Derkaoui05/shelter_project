@@ -1,3 +1,5 @@
+import ReactDOMServer from 'react-dom/server';
+
 import {
   DollarSign,
   Hammer,
@@ -20,6 +22,7 @@ export const generateHash = (str) => {
   }
   return Math.abs(hash).toString(36);
 };
+
 export const generateTooltipContent = (row) => {
   const country = row.values["COUNTRY"] || "N/A";
   const year = row.values["YEAR"] || "N/A";
@@ -27,19 +30,21 @@ export const generateTooltipContent = (row) => {
   const description = row.original.DESCRIPTION || "No description available";
   const keywords = row.original.KEYWORDS || "No keywords available";
   const link = row.original.url || "no link available";
-  const image = row.values["IMAGE"];
+  const image = row.values["IMAGE"] || "no image available";
 
-  return `
-      <div class="p-2">
-        <div class="flex">
-          <h1 class="mb-6 text-lg font-semibold">${country} ${year} - ${crisis}</h1>
-          <img src="${image ? image : ""}" alt="Tooltip Image" />
-        </div>
-        <p class="mb-1 font-semibold">Description:<br /> <span class="text-gray-300 font-normal">${description}</span></p>
-        <p class="mb-1 font-semibold">Keywords:<br/> <span class="font-normal text-gray-300">${keywords}</span></p>
-        <p class="mb-1 font-semibold">Link:<br/> <a href={${link}} class="font-normal text-blue-300">${link}</a></p>
+  const tooltipContent = (
+    <div className="p-2">
+      <div className="flex">
+        <h1 className="mb-6 text-lg font-semibold">{country} {year} - {crisis}</h1>
+        <img src={image ? image : ""} alt="Tooltip Image" />
       </div>
-    `;
+      <p className="mb-1 font-semibold">Description:<br /> <span className="text-gray-300 font-normal">{description}</span></p>
+      <p className="mb-1 font-semibold">Keywords:<br /> <span className="font-normal text-gray-300">{keywords}</span></p>
+      <p className="mb-1 font-semibold">Link:<br /> <a href={link} className="font-normal text-blue-300">{link}</a></p>
+    </div>
+  );
+
+  return ReactDOMServer.renderToString(tooltipContent);
 };
 
 export const supportMethodIcons = {
@@ -91,3 +96,5 @@ export const shelterAssistanceIcons = {
     <Wrench className="text-gray-500" size={16} />
   ),
 };
+
+

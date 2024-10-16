@@ -1,7 +1,7 @@
 [
   {
     "SHELTER ASSISTANCE TYPES": {
-      "Emergency shelter": false,
+      "Emergency shelter": true,
       "Transitional/semi-permanent shelter": false,
       "Host family support": false,
       "Rental support": false,
@@ -9,7 +9,7 @@
       "Housing repair/retrofit/rehabilitation": false
     },
     "SUPPORT METHODS": {
-      "Cash-for-Work": false,
+      "Cash-for-Work": true,
       "Conditional cash transfer": false,
       "Restricted cash/voucher": false,
       "Unconditional & Unrestricted": false,

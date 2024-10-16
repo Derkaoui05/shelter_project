@@ -1,4 +1,4 @@
-import { AArrowDown, AArrowUp, ChevronDown, ChevronUp, Layers, Eye, EyeOff, Filter } from 'lucide-react';
+import { AArrowDown, AArrowUp, ChevronDown, ChevronUp, Eye, EyeOff, Filter, Layers } from 'lucide-react';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useExpanded, useGlobalFilter, useGroupBy, useSortBy, useTable } from 'react-table';
 import { Tooltip } from 'react-tooltip';
@@ -10,8 +10,10 @@ import SearchInput from './SearchInput';
 export default function DataTable() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hiddenColumns, setHiddenColumns] = useState({});
-  const data = useMemo(() => tableData, []);
+  const [filterMenuOpen, setFilterMenuOpen] = useState(null);
+  const [columnFilters, setColumnFilters] = useState({});
 
+  const data = useMemo(() => tableData, []);
 
   const columns = useMemo(() => {
     return columnSchema.map((col) => ({
@@ -22,6 +24,7 @@ export default function DataTable() {
       grouping: col.grouping,
       tooltip: col.tooltip,
       visibility: col.visibility,
+      dropDownFiltering: col.dropDownFiltering,
       Cell: ({ value, row, column }) => renderCellContent(value, row, column),
     }));
   }, []);
@@ -31,31 +34,20 @@ export default function DataTable() {
       return null;
     }
 
-    if (column.Header === 'SUPPORT METHODS' && typeof value === 'object') {
+    if ((column.Header === 'SHELTER ASSISTANCE TYPES' || column.Header === 'SUPPORT METHODS') && typeof value === 'object') {
+      const tooltipId = `tooltip-${generateHash(`${row.id}-${column.Header}`)}`;
       return (
         <div className="px-6 py-4 flex items-center text-gray-900">
-          {Object.entries(value).map(([method, used]) =>
+          {Object.entries(value).map(([key, used]) =>
             used ? (
-              <span key={method} className="flex items-center mr-2">
-                {supportMethodIcons[method]}
+              <span key={key} className="flex items-center mr-2" data-tooltip-id={tooltipId}>
+                {column.Header === 'SHELTER ASSISTANCE TYPES' ? shelterAssistanceIcons[key] : supportMethodIcons[key]}
+                <Tooltip id={tooltipId} clickable={true} content={`${key}`} place="top" />
               </span>
             ) : null
           )}
         </div>
-      );
-    }
-    if (column.Header === 'SHELTER ASSISTANCE TYPES' && typeof value === 'object') {
-      return (
-        <div className="px-6 py-4 flex items-center text-gray-900">
-          {Object.entries(value).map(([type, used]) =>
-            used ? (
-              <span key={type} className="flex items-center mr-2">
-                {shelterAssistanceIcons[type]}
-              </span>
-            ) : null
-          )}
-        </div>
-      );
+      )
     }
 
     let content = value;
@@ -75,13 +67,11 @@ export default function DataTable() {
     }
 
     const tooltipId = column.tooltip ? `tooltip-${generateHash(`${row.id}-${column.Header}`)}` : '';
-    const tooltipContent = column.tooltip ? generateTooltipContent(row) : '';
-
     return (
       <div className={`px-6 py-4 text-gray-900 ${styleContent}`}>
         <span
           data-tooltip-id={tooltipId}
-          data-tooltip-html={tooltipContent}
+          data-tooltip-html={generateTooltipContent(row) || ''}
         >
           {content || ''}
         </span>
@@ -104,6 +94,18 @@ export default function DataTable() {
       columns,
       data,
       autoResetGroupBy: false,
+      filterTypes: {
+        text: (rows, id, filterValue) => {
+          return rows.filter(row => {
+            const rowValue = row.values[id]
+            return rowValue !== undefined
+              ? String(rowValue)
+                .toLowerCase()
+                .startsWith(String(filterValue).toLowerCase())
+              : true
+          })
+        },
+      },
     },
     useGlobalFilter,
     useGroupBy,
@@ -130,8 +132,29 @@ export default function DataTable() {
     setHiddenColumns(prev => ({
       ...prev,
       [columnId]: !prev[columnId]
+    })); O
+  };
+
+  const toggleFilterMenu = (columnId) => {
+    setFilterMenuOpen(prevState => prevState === columnId ? null : columnId);
+  };
+
+  const handleFilterChange = (columnId, filterValue) => {
+    setColumnFilters(prevFilters => ({
+      ...prevFilters,
+      [columnId]: filterValue,
     }));
   };
+
+  const filteredRows = useMemo(() => {
+    return rows.filter(row => {
+      return Object.entries(columnFilters).every(([columnId, filterValue]) => {
+        if (!filterValue) return true;
+        const cellValue = row.values[columnId];
+        return cellValue && cellValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+      });
+    });
+  }, [rows, columnFilters]);
 
   if (!data || data.length === 0) {
     return <div className="text-center text-red-600 font-bold p-4">NO DATA AVAILABLE😑</div>;
@@ -151,7 +174,7 @@ export default function DataTable() {
             Strength/Weakness Case <br /> Study Analysis Tool
           </h1>
         </div>
-        
+
         <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase">
             {headerGroups.map((headerGroup) => (
@@ -160,8 +183,7 @@ export default function DataTable() {
                   <th
                     {...column.getHeaderProps()}
                     colSpan={1}
-                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? ' w-12' : ''
-                      }`}
+                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? ' w-12' : ''}`}
                     style={{ height: '375px' }}
                   >
                     <div className="header-content flex items-end">
@@ -187,7 +209,14 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
-
+                      {column.dropDownFiltering && !hiddenColumns[column.id] && (
+                        <div
+                          onClick={() => toggleFilterMenu(column.id)}
+                          className="cursor-pointer filter ml-2"
+                        >
+                          <Filter className="inline text-black opacity-40" size={16} />
+                        </div>
+                      )}
                       {column.visibility && (
                         <div
                           onClick={() => toggleColumnVisibility(column.id)}
@@ -202,6 +231,28 @@ export default function DataTable() {
                       )}
                       {column.rotate && <div className='header-background'></div>}
                     </div>
+                    {filterMenuOpen === column.id && (
+                      <div className="absolute z-[999] mt-2 w-48 rounded-md shadow-lg bg-gray-200">
+                        <div className="py-1">
+                          <input
+                            type="text"
+                            placeholder="Filter..."
+                            value={columnFilters[column.id] || ''}
+                            onChange={(e) => handleFilterChange(column.id, e.target.value)}
+                            className="block w-full px-4 py-2 text-sm text-gray-700 border-b"
+                          />
+                          {Array.from(new Set(rows.map(row => row.values[column.id]))).map((value, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleFilterChange(column.id, value)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              {value}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -209,7 +260,7 @@ export default function DataTable() {
           </thead>
 
           <tbody {...getTableBodyProps()} className="bg-white cursor-pointer">
-            {rows.map((row) => {
+            {filteredRows.map((row) => {
               prepareRow(row);
               return (
                 <Fragment key={row.id}>

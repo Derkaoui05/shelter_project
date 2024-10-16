@@ -60,11 +60,3 @@ body {
   transform-origin: left bottom;
   z-index: -2;
 }
-
-
-.filter-dropdown select {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-  background-color: #f8f8f8;
-}
