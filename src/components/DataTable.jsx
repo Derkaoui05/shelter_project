@@ -136,15 +136,22 @@ export default function DataTable() {
   };
 
   const toggleFilterMenu = (columnId) => {
-    setFilterMenuOpen(prevState => prevState === columnId ? null : columnId);
+    setFilterMenuOpen(prevState => {
+      if (prevState !== columnId) {
+        setColumnFilters({});
+      }
+      return prevState === columnId ? null : columnId;
+    });
   };
+  
+  
 
   const handleFilterChange = (columnId, filterValue) => {
-    setColumnFilters(prevFilters => ({
-      ...prevFilters,
+    setColumnFilters({
       [columnId]: filterValue,
-    }));
+    });
   };
+  ;
 
   const filteredRows = useMemo(() => {
     return rows.filter(row => {
@@ -183,11 +190,14 @@ export default function DataTable() {
                   <th
                     {...column.getHeaderProps()}
                     colSpan={1}
-                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? ' w-12' : ''}`}
+                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? 'w-12 bg-gray-200' : ''}`}
                     style={{ height: '375px' }}
                   >
                     <div className="header-content flex items-end">
+                      {/* Dsiplaying Column Header */}
                       {!hiddenColumns[column.id] && <span>{column.render('Header')}</span>}
+
+                      {/* grouping */}
                       {column.canGroupBy && column.grouping && !hiddenColumns[column.id] && (
                         <div
                           onClick={() => handleGroupBy(column.id)}
@@ -200,6 +210,7 @@ export default function DataTable() {
                           )}
                         </div>
                       )}
+                      {/* Sorting */}
                       {column.canSort && !hiddenColumns[column.id] && (
                         <div className="cursor-pointer sort ml-2" {...column.getSortByToggleProps()}>
                           {column.isSorted
@@ -209,6 +220,7 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
+                      {/* Filtering */}
                       {column.dropDownFiltering && !hiddenColumns[column.id] && (
                         <div
                           onClick={() => toggleFilterMenu(column.id)}
@@ -217,6 +229,7 @@ export default function DataTable() {
                           <Filter className="inline text-black opacity-40" size={16} />
                         </div>
                       )}
+                      {/* visibility */}
                       {column.visibility && (
                         <div
                           onClick={() => toggleColumnVisibility(column.id)}
@@ -229,23 +242,19 @@ export default function DataTable() {
                           )}
                         </div>
                       )}
+                      {/* rotate of background */}
                       {column.rotate && <div className='header-background'></div>}
                     </div>
+
+                    {/* dropDown filtering data */}
                     {filterMenuOpen === column.id && (
                       <div className="absolute z-[999] mt-2 w-48 rounded-md shadow-lg bg-gray-200">
                         <div className="py-1">
-                          <input
-                            type="text"
-                            placeholder="Filter..."
-                            value={columnFilters[column.id] || ''}
-                            onChange={(e) => handleFilterChange(column.id, e.target.value)}
-                            className="block w-full px-4 py-2 text-sm text-gray-700 border-b"
-                          />
                           {Array.from(new Set(rows.map(row => row.values[column.id]))).map((value, index) => (
                             <button
                               key={index}
                               onClick={() => handleFilterChange(column.id, value)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              className="block w-full text-pretty text-left  px-4  py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               {value}
                             </button>
