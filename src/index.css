@@ -1,10 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html,
-body {
-  transition: transform 0.1s ease !important;
-}
+
+
 .starter .header-content {
   margin-bottom: -5px;
   font-size: 18px;
@@ -60,3 +58,4 @@ body {
   transform-origin: left bottom;
   z-index: -2;
 }
+

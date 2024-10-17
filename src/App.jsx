@@ -12,7 +12,7 @@ const App = () => {
   }, [])
   return (
     <>
-      <DataTable data={data} />
+      <DataTable data={data}  />
     </>
   )
 }

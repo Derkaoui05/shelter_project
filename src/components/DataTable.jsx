@@ -6,13 +6,14 @@ import tableData from '../../data.json';
 import columnSchema from '../Schema';
 import { generateHash, generateTooltipContent, shelterAssistanceIcons, supportMethodIcons } from '../utils/data';
 import SearchInput from './SearchInput';
+import { Zoom } from './Zoom';
 
 export default function DataTable() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [filterMenuOpen, setFilterMenuOpen] = useState(null);
   const [columnFilters, setColumnFilters] = useState({});
-
+  const [zoom, setZoom] = useState(1);
   const data = useMemo(() => tableData, []);
 
   const columns = useMemo(() => {
@@ -137,9 +138,6 @@ export default function DataTable() {
 
   const toggleFilterMenu = (columnId) => {
     setFilterMenuOpen(prevState => {
-      if (prevState !== columnId) {
-        setColumnFilters({});
-      }
       return prevState === columnId ? null : columnId;
     });
   };
@@ -167,13 +165,20 @@ export default function DataTable() {
     return <div className="text-center text-red-600 font-bold p-4">NO DATA AVAILABLE😑</div>;
   }
 
+
+  const handleZoomIn = () => setZoom((prevZoom) => prevZoom + 0.1);
+  const handleZoomOut = () => setZoom((prevZoom) => ( prevZoom - 0.1 ));
+
   return (
-    <div className="space-y-3 w-full overflow-x-visible">
+    <div className="space-y-3 w-full "  style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
+      <div className="flex items-center justify-start">
       <SearchInput
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search Here..."
       />
+       <Zoom zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+      </div>
       <div className="relative overflow-x-auto shadow-xl shadow-slate-400">
         <div className="absolute left-4 top-10 mb-4">
           <h1 className='text-[#bdaa8d] text-3xl'>SHELTER PROJECTS</h1>
@@ -183,17 +188,17 @@ export default function DataTable() {
         </div>
 
         <table {...getTableProps()} className="w-full text-sm text-left text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase">
+          <thead className="text-xs text-gray-700">
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th
                     {...column.getHeaderProps()}
                     colSpan={1}
-                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'} ${hiddenColumns[column.id] ? 'w-12 bg-gray-200' : ''}`}
+                    className={`px-6 py-2 text-gray-800 border-none align-bottom whitespace-nowrap ${column.rotate ? 'rotate' : 'starter'}`}
                     style={{ height: '375px' }}
                   >
-                    <div className="header-content flex items-end">
+                    <div className={`header-content flex items-end  ${hiddenColumns[column.id] ? 'bg-gray-200' : ''}`}>
                       {/* Dsiplaying Column Header */}
                       {!hiddenColumns[column.id] && <span>{column.render('Header')}</span>}
 
@@ -220,6 +225,7 @@ export default function DataTable() {
                             : <AArrowUp className="inline text-black opacity-40" size={16} />}
                         </div>
                       )}
+
                       {/* Filtering */}
                       {column.dropDownFiltering && !hiddenColumns[column.id] && (
                         <div
@@ -248,7 +254,7 @@ export default function DataTable() {
 
                     {/* dropDown filtering data */}
                     {filterMenuOpen === column.id && (
-                      <div className="absolute z-[999] mt-2 w-48 rounded-md shadow-lg bg-gray-200">
+                      <div className="absolute z-50  mt-2 w-48 rounded-md shadow-lg bg-gray-200">
                         <div className="py-1">
                           {Array.from(new Set(rows.map(row => row.values[column.id]))).map((value, index) => (
                             <button
@@ -294,7 +300,7 @@ export default function DataTable() {
                       {row.cells.map((cell) => (
                         <td
                           {...cell.getCellProps()}
-                          className={`text-left ${hiddenColumns[cell.column.id] ? 'bg-gray-200 w-12' : ''}`}
+                          className={`text-left ${hiddenColumns[cell.column.id] ? 'bg-gray-200' : ''}`}
                         >
                           {!hiddenColumns[cell.column.id] && cell.render('Cell')}
                         </td>
